@@ -2,6 +2,12 @@
 
 ### Setup
 
+Rodar esse comando para instalar o adonis global na máquina
+
+```
+npm i -g @adonisjs/cli
+```
+
 ```bash
 yarn
 ```
