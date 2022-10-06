@@ -9,18 +9,23 @@ class ConviteController {
     const { email, idAnalista } = request.all();
 
     const analista = await Analista.find(idAnalista);
-    console.log(analista);
+    if (analista == null) {
+      return response.status(500).send({ message: "Analista não encontrado!" });
+    }
 
-    //regras:
-    //cliente = pesquisar cliente na tabela cliente se existir, barrar.
     const cliente = await Cliente.findBy("email_primario", email);
-    console.log(cliente);
+    if (cliente != null) {
+      return response.status(500).send({ message: "Cliente já cadastrado!" });
+    }
 
-    //convite = se existir alguma convite ativo para esse email, barrar
     const convite = await Convite.findBy("email", email, "ativo", 1);
+    if (convite != null) {
+      return response
+        .status(500)
+        .send({ message: "Já existe um convite ativo para este e-mail!" });
+    }
 
     const codigo = Math.floor(Math.random() * 1000000);
-
     const conviteGerado = await Convite.create({
       codigo: codigo,
       email: email,
@@ -28,15 +33,13 @@ class ConviteController {
       ativo: 1,
     });
 
-    console.log(conviteGerado);
-
     await Mail.send(
       ["emails.template-convite"],
       { codigo, nomeAnalista: analista.nome },
       (message) => {
         message
           .to(email)
-          .from("rodrigomunhoz1995@gmail.com", "Rodrigo Molina")
+          .from("contato@walletbalancer.com.br", "Contato | Wallet Balancer")
           .subject("Convite | Wallet Balancer");
       }
     );
