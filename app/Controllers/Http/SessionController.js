@@ -12,12 +12,12 @@ class SessionController {
       if (tipoAcesso == 1) {
         token = await auth.authenticator("analista").attempt(email, senha);
         if (token != null) {
-          user = await Database.table("analista").select("id", "nome");
+          user = await Database.table("analista").select("id", "nome").first();
         }
       } else if (tipoAcesso == 2) {
         token = await auth.authenticator("cliente").attempt(email, senha);
         if (token != null) {
-          user = await Database.table("cliente").select("id", "nome");
+          user = await Database.table("cliente").select("id", "nome").first();
         }
       }
 
@@ -28,8 +28,6 @@ class SessionController {
         .send({ error: { message: "Usuário ou senha incorretos!" } });
     }
   }
-
-  async analista({ request, auth }) {}
 }
 
 module.exports = SessionController;
