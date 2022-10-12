@@ -32,7 +32,7 @@ class ConviteController {
         });
       }
 
-      const codigo = Math.floor(Math.random() * 1000000);
+      const codigo = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
       await Convite.create(
         {
           codigo: codigo,
