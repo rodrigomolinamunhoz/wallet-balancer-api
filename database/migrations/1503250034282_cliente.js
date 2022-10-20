@@ -8,8 +8,8 @@ class ClienteSchema extends Schema {
     this.create("cliente", (table) => {
       table.increments();
       table.string("nome", 254).notNullable();
-      table.string("email_primario", 254).notNullable().unique();
-      table.string("email_secundario", 254).notNullable().unique();
+      table.string("email_primario", 254).notNullable();
+      table.string("email_secundario", 254).notNullable();
       table.string("senha", 60).notNullable();
       table
         .integer("id_analista")
