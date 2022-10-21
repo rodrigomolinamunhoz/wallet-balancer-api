@@ -1,5 +1,7 @@
 "use strict";
 const Database = use("Database");
+const Analista = use("App/Models/Analista");
+const Cliente = use("App/Models/Cliente");
 
 class SessionController {
   async store({ request, response, auth }) {
@@ -12,16 +14,16 @@ class SessionController {
       if (tipoAcesso == 1) {
         token = await auth.authenticator("analista").attempt(email, senha);
         if (token != null) {
-          user = await Database.table("analista").select("id", "nome").first();
+          user = await Analista.findBy("email", email);
         }
       } else if (tipoAcesso == 2) {
         token = await auth.authenticator("cliente").attempt(email, senha);
         if (token != null) {
-          user = await Database.table("cliente").select("id", "nome").first();
+          user = await Cliente.findBy("email_primario", email);
         }
       }
 
-      return { token, user };
+      return { token, user: { id: user.id, nome: user.nome } };
     } catch {
       return response
         .status(401)
