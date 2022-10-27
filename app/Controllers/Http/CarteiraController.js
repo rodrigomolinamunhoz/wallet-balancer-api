@@ -32,10 +32,12 @@ class CarteiraController {
     await carteira.delete();
   }
 
-  async list({ request }) {
+  async list({ params, request }) {
     const { page } = request.get();
 
-    const carteiras = await Carteira.query().paginate(page);
+    const carteiras = await Carteira.query()
+      .where("id_cliente", params.id)
+      .paginate(page);
 
     return carteiras;
   }

@@ -13,6 +13,6 @@ Route.post("carteira", "CarteiraController.create");
 Route.get("carteira/:id", "CarteiraController.show");
 Route.put("carteira/:id", "CarteiraController.update");
 Route.delete("carteira/:id", "CarteiraController.delete");
-Route.get("carteiras", "CarteiraController.list");
+Route.get("carteiras/:id", "CarteiraController.list");
 
 Route.get("acoes", "AcaoController.list");
