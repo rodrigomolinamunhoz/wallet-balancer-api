@@ -16,3 +16,14 @@ Route.delete("carteira/:id", "CarteiraController.delete");
 Route.get("carteiras/:id", "CarteiraController.list");
 
 Route.get("acoes", "AcaoController.list");
+
+Route.post("carteira/:id/ativo", "AtivoController.createupdate");
+Route.get(
+  "cliente/:cliente_id/carteira/:carteira_id/ativos",
+  "AtivoController.list"
+);
+Route.get(
+  "cliente/:cliente_id/carteira/:carteira_id/ativos",
+  "AtivoController.list"
+);
+Route.delete("ativo/:id", "AtivoController.delete");

@@ -8,6 +8,10 @@ class Acao extends Model {
     return "acao";
   }
 
+  segmento() {
+    return this.hasOne("App/Models/segmento", "segmento_id", "id");
+  }
+
   static get hidden() {
     return ["created_at", "updated_at"];
   }

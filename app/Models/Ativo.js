@@ -3,13 +3,13 @@
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use("Model");
 
-class Segmento extends Model {
+class Ativo extends Model {
   static get table() {
-    return "segmento";
+    return "ativo";
   }
 
-  subsetor() {
-    return this.hasOne("App/Models/Subsetor", "subsetor_id", "id");
+  acao() {
+    return this.hasOne("App/Models/Acao", "acao_id", "id");
   }
 
   static get hidden() {
@@ -17,4 +17,4 @@ class Segmento extends Model {
   }
 }
 
-module.exports = Segmento;
+module.exports = Ativo;
