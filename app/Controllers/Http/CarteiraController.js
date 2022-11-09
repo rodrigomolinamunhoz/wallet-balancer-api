@@ -1,5 +1,6 @@
 "use strict";
 const Carteira = use("App/Models/Carteira");
+const Ativo = use("App/Models/Ativo");
 
 class CarteiraController {
   async create({ request }) {
@@ -27,9 +28,8 @@ class CarteiraController {
   }
 
   async delete({ params }) {
-    const carteira = await Carteira.findOrFail(params.id);
-
-    await carteira.delete();
+    await Ativo.query().where("carteira_id", params.id).delete();
+    await Carteira.query().where("id", params.id).delete();
   }
 
   async list({ params, request }) {

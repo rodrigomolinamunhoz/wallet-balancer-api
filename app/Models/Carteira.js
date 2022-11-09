@@ -7,6 +7,10 @@ class Carteira extends Model {
   static get table() {
     return "carteira";
   }
+
+  ativos() {
+    return this.hasMany("App/Models/Ativo", "id", "carteira_id");
+  }
 }
 
 module.exports = Carteira;
