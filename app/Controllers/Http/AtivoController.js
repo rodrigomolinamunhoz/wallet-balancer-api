@@ -119,9 +119,61 @@ class AtivoController {
       .fetch();
   }
 
-  async delete({ params }) {
-    const ativo = await Ativo.findOrFail(params.id);
-    await ativo.delete();
+  async delete({ params, response }) {
+    try {
+      const ativo = await Ativo.find(params.id);
+
+      if (ativo === null) {
+        return response.status(500).send({
+          error: {
+            message: "Ativo não encontrado!",
+          },
+        });
+      }
+
+      if (ativo.quantidade > 0) {
+        return response.status(500).send({
+          error: {
+            message:
+              "Você possui uma quantidade de ações para este ativo. Zere sua posição para poder excluí-lo!",
+          },
+        });
+      }
+
+      await ativo.delete();
+    } catch (error) {
+      return response.status(500).send({
+        error: {
+          message:
+            "Ocorreu algum erro inesperado! Por favor, tente novamente mais tarde.",
+        },
+      });
+    }
+  }
+
+  async rebalancearAtivos({ params, request, response }) {
+    try {
+      const data = request.only(["objetivo"]);
+
+      const ativo = await Ativo.findBy({
+        carteira_id: params.carteira_id,
+        cliente_id: params.cliente_id,
+      });
+
+      if (ativo !== null) {
+        ativo.merge({
+          objetivo: (ativo.objetivo += data.objetivo),
+        });
+        await ativo.save();
+      }
+    } catch (error) {
+      return response.status(500).send({
+        error: {
+          message:
+            "Ocorreu algum erro inesperado! Por favor, tente novamente mais tarde.",
+        },
+      });
+    }
   }
 }
 

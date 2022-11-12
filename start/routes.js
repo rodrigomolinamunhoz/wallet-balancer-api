@@ -27,3 +27,7 @@ Route.get(
   "AtivoController.list"
 );
 Route.delete("ativo/:id", "AtivoController.delete");
+Route.post(
+  "cliente/:cliente_id/carteira/:carteira_id/rebalancear-ativos",
+  "AtivoController.rebalancearAtivos"
+);
