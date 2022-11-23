@@ -13,6 +13,7 @@ class AtivoController {
       }
 
       const soma = data
+        .filter((a) => a.tipo_cadastro !== "R")
         .map((a) => a.objetivo)
         .reduce((accumulator, value) => {
           return accumulator + value;
@@ -24,8 +25,18 @@ class AtivoController {
         });
       }
 
+      const ativosRemover = data.filter((d) => d.tipo_cadastro === "R");
       const ativosNovos = data.filter((d) => d.tipo_cadastro === "N");
       const ativosEditar = data.filter((d) => d.tipo_cadastro === "E");
+
+      if (ativosRemover.length > 0) {
+        ativosRemover.forEach(async (a) => {
+          const ativo = await Ativo.find(a.id);
+          if (ativo != null) {
+            await ativo.delete();
+          }
+        });
+      }
 
       if (ativosNovos.length > 0) {
         if (this.validarAtivoRepetido(ativosNovos)) {
@@ -53,7 +64,6 @@ class AtivoController {
         await this.update(ativosEditar);
       }
     } catch (error) {
-      console.log(error);
       return response.status(500).send({
         error: {
           message:
@@ -119,61 +129,21 @@ class AtivoController {
       .fetch();
   }
 
-  async delete({ params, response }) {
-    try {
-      const ativo = await Ativo.find(params.id);
-
-      if (ativo === null) {
-        return response.status(500).send({
-          error: {
-            message: "Ativo não encontrado!",
-          },
-        });
+  async delete(ativos) {
+    ativos.forEach(async (a) => {
+      const ativo = await Ativo.find(a.id);
+      if (ativo != null) {
+        if (ativo.quantidade > 0) {
+          return response.status(500).send({
+            error: {
+              message:
+                "Você possui uma quantidade de ações para este ativo. Zere sua posição para poder excluí-lo!",
+            },
+          });
+        }
+        await ativo.delete();
       }
-
-      if (ativo.quantidade > 0) {
-        return response.status(500).send({
-          error: {
-            message:
-              "Você possui uma quantidade de ações para este ativo. Zere sua posição para poder excluí-lo!",
-          },
-        });
-      }
-
-      await ativo.delete();
-    } catch (error) {
-      return response.status(500).send({
-        error: {
-          message:
-            "Ocorreu algum erro inesperado! Por favor, tente novamente mais tarde.",
-        },
-      });
-    }
-  }
-
-  async rebalancearAtivos({ params, request, response }) {
-    try {
-      const data = request.only(["objetivo"]);
-
-      const ativo = await Ativo.findBy({
-        carteira_id: params.carteira_id,
-        cliente_id: params.cliente_id,
-      });
-
-      if (ativo !== null) {
-        ativo.merge({
-          objetivo: (ativo.objetivo += data.objetivo),
-        });
-        await ativo.save();
-      }
-    } catch (error) {
-      return response.status(500).send({
-        error: {
-          message:
-            "Ocorreu algum erro inesperado! Por favor, tente novamente mais tarde.",
-        },
-      });
-    }
+    });
   }
 }
 
