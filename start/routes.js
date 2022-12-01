@@ -27,3 +27,5 @@ Route.get(
   "AtivoController.list"
 );
 Route.delete("ativo/:id", "AtivoController.delete");
+
+Route.get("setores", "SetorController.list");
