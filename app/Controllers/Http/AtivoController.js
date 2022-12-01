@@ -45,11 +45,11 @@ class AtivoController {
           });
         }
 
-        if (await this.validarAtivoExistente(params.id, ativosNovos)) {
-          return response.status(500).send({
-            error: { message: "Não é permitido cadastrar ativos iguais!" },
-          });
-        }
+        // if (await this.validarAtivoExistente(params.id, ativosNovos)) {
+        //   return response.status(500).send({
+        //     error: { message: "Não é permitido cadastrar ativos iguais!" },
+        //   });
+        // }
 
         await this.create(ativosNovos);
       }
