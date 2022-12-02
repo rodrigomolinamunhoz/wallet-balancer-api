@@ -30,3 +30,8 @@ Route.delete("ativo/:id", "AtivoController.delete");
 Route.put("compra-venda", "AtivoController.buysale");
 
 Route.get("setores", "SetorController.list");
+
+Route.get(
+  "cliente/:cliente_id/carteira/:carteira_id/historico-ativos",
+  "HistoricoAtivoController.list"
+);
