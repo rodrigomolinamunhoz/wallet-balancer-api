@@ -192,6 +192,45 @@ class AtivoController {
       });
     }
   }
+
+  async listBalancer({ params }) {
+    const ativos = await Database.select(
+      "ativo.id",
+      "ativo.acao_id",
+      "acao.codigo as codigo_acao",
+      "setor.id as setor_id",
+      "setor.descricao as descricao_setor",
+      "ativo.quantidade",
+      "ativo.cotacao_atual",
+      "ativo.objetivo",
+      "ativo.cliente_id",
+      "ativo.carteira_id"
+    )
+      .table("ativo")
+      .innerJoin("acao", "acao.id", "ativo.acao_id")
+      .innerJoin("segmento", "segmento.id", "acao.segmento_id")
+      .innerJoin("subsetor", "subsetor.id", "segmento.subsetor_id")
+      .innerJoin("setor", "setor.id", "subsetor.setor_id")
+      .where("ativo.carteira_id", params.carteira_id)
+      .where("ativo.cliente_id", params.cliente_id)
+      .orderBy("ativo.id");
+
+    const soma = ativos
+      .map((a) => a.quantidade * a.cotacao_atual)
+      .reduce((accumulator, value) => {
+        return accumulator + value;
+      }, 0);
+
+    ativos.map((element) => {
+      element.patrimonio = element.quantidade * element.cotacao_atual;
+      element.participacao_atual = (100 * element.patrimonio) / soma;
+      element.distancia_objetivo =
+        element.objetivo - element.participacao_atual;
+      return ativos;
+    });
+
+    return { patrimonio: soma, ativos: ativos };
+  }
 }
 
 module.exports = AtivoController;

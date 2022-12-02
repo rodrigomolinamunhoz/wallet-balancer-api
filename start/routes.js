@@ -28,6 +28,10 @@ Route.get(
 );
 Route.delete("ativo/:id", "AtivoController.delete");
 Route.put("compra-venda", "AtivoController.buysale");
+Route.get(
+  "cliente/:cliente_id/carteira/:carteira_id/listar-balanceador",
+  "AtivoController.listBalancer"
+);
 
 Route.get("setores", "SetorController.list");
 
