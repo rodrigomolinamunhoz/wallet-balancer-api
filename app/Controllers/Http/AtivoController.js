@@ -1,5 +1,8 @@
 "use strict";
 const Ativo = use("App/Models/Ativo");
+const Acao = use("App/Models/Acao");
+const HistoricoAtivo = use("App/Models/HistoricoAtivo");
+const Database = use("Database");
 
 class AtivoController {
   async createupdate({ params, request, response }) {
@@ -129,21 +132,65 @@ class AtivoController {
       .fetch();
   }
 
-  async delete(ativos) {
-    ativos.forEach(async (a) => {
-      const ativo = await Ativo.find(a.id);
-      if (ativo != null) {
-        if (ativo.quantidade > 0) {
-          return response.status(500).send({
-            error: {
-              message:
-                "Você possui uma quantidade de ações para este ativo. Zere sua posição para poder excluí-lo!",
-            },
-          });
-        }
-        await ativo.delete();
+  async buysale({ request, response }) {
+    const trx = await Database.beginTransaction();
+    try {
+      var data = request.input("ativos");
+      var erroQuantidade = { erro: false, acao: 0 };
+
+      if (data.length === 0) {
+        return response.status(500).send({
+          error: { message: "Ativo(s) obrigatório(s)!" },
+        });
       }
-    });
+
+      for (let i = 0; i < data.length; i++) {
+        var ativo = await Ativo.find(data[i].ativo_id, trx);
+        if (data[i].tipo_compra === 2) {
+          if (data[i].quantidade > ativo.quantidade) {
+            erroQuantidade = { erro: true, acao_id: ativo.acao_id };
+            break;
+          }
+        }
+      }
+
+      if (erroQuantidade.erro) {
+        var acao = await Acao.find(erroQuantidade.acao_id, trx);
+        return response.status(500).send({
+          error: {
+            message: `Não é permitido vender uma quantidade maior que a existente na ação ${acao.codigo}!`,
+          },
+        });
+      }
+
+      for (let i = 0; i < data.length; i++) {
+        var ativo = await Ativo.find(data[i].ativo_id, trx);
+        if (data[i].tipo_compra === 1) {
+          ativo.merge({ quantidade: ativo.quantidade + data[i].quantidade });
+          await ativo.save();
+        } else {
+          ativo.merge({ quantidade: ativo.quantidade - data[i].quantidade });
+          await ativo.save();
+        }
+      }
+
+      data.forEach(async (a) => {
+        await HistoricoAtivo.create({
+          acao_id: a.acao_id,
+          tipo_compra: a.tipo_compra,
+          quantidade: a.quantidade,
+          carteira_id: a.carteira_id,
+          cliente_id: a.cliente_id,
+        });
+      });
+
+      trx.commit();
+    } catch (error) {
+      await trx.rollback();
+      return response.status(500).send({
+        error: error,
+      });
+    }
   }
 }
 
