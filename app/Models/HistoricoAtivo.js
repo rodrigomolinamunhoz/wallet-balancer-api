@@ -7,6 +7,14 @@ class HistoricoAtivo extends Model {
   static get table() {
     return "historico_ativo";
   }
+
+  acao() {
+    return this.hasOne("App/Models/Acao", "acao_id", "id");
+  }
+
+  static get hidden() {
+    return ["created_at"];
+  }
 }
 
 module.exports = HistoricoAtivo;
