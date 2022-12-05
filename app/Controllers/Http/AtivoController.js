@@ -223,7 +223,9 @@ class AtivoController {
 
     ativos.map((element) => {
       element.patrimonio = element.quantidade * element.cotacao_atual;
-      element.participacao_atual = (100 * element.patrimonio) / soma;
+      element.participacao_atual = isNaN((100 * element.patrimonio) / soma)
+        ? 0
+        : (100 * element.patrimonio) / soma;
       element.distancia_objetivo =
         element.objetivo - element.participacao_atual;
       return ativos;
