@@ -227,7 +227,7 @@ class AtivoController {
         ? 0
         : (100 * element.patrimonio) / soma;
       element.distancia_objetivo =
-        element.objetivo - element.participacao_atual;
+        element.participacao_atual - element.objetivo;
       return ativos;
     });
 
