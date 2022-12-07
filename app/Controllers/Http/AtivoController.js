@@ -228,10 +228,67 @@ class AtivoController {
         : (100 * element.patrimonio) / soma;
       element.distancia_objetivo =
         element.participacao_atual - element.objetivo;
+      element.quantidade_compra = 0;
       return ativos;
     });
 
     return { patrimonio: soma, ativos: ativos };
+  }
+
+  async calculateContribution({ params, request }) {
+    const data = request.get();
+    const resultado = await this.listBalancer({ params });
+    const listaAtivos = resultado.ativos;
+
+    const valorAporte = parseFloat(data.valorAporte);
+    const patrimonioFuturo =
+      parseFloat(data.valorAporte) + parseFloat(resultado.patrimonio);
+
+    var valorAporteAux = valorAporte;
+    var posicao = 0;
+    var maiorDistancia = 0;
+
+    while (valorAporteAux > 0) {
+      posicao = 0;
+      maiorDistancia =
+        listaAtivos[posicao].objetivo -
+        (100 *
+          ((listaAtivos[posicao].quantidade +
+            listaAtivos[posicao].quantidade_compra) *
+            listaAtivos[posicao].cotacao_atual)) /
+          patrimonioFuturo;
+
+      for (let index = 0; index < listaAtivos.length; index++) {
+        const distanciaComparada =
+          listaAtivos[index].objetivo -
+          (100 *
+            ((listaAtivos[index].quantidade +
+              listaAtivos[index].quantidade_compra) *
+              listaAtivos[index].cotacao_atual)) /
+            patrimonioFuturo;
+
+        if (distanciaComparada > maiorDistancia) {
+          posicao = index;
+          maiorDistancia = distanciaComparada;
+        }
+      }
+
+      if (valorAporteAux > listaAtivos[posicao].cotacao_atual) {
+        listaAtivos[posicao].quantidade_compra =
+          listaAtivos[posicao].quantidade_compra + 1;
+        valorAporteAux = valorAporteAux - listaAtivos[posicao].cotacao_atual;
+      } else {
+        break;
+      }
+    }
+
+    const soma = listaAtivos
+      .map((a) => a.quantidade * a.cotacao_atual)
+      .reduce((accumulator, value) => {
+        return accumulator + value;
+      }, 0);
+
+    return { patrimonio: soma, ativos: listaAtivos };
   }
 }
 

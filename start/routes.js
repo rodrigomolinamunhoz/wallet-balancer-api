@@ -33,6 +33,11 @@ Route.get(
   "AtivoController.listBalancer"
 );
 
+Route.get(
+  "cliente/:cliente_id/carteira/:carteira_id/balancear",
+  "AtivoController.calculateContribution"
+);
+
 Route.get("setores", "SetorController.list");
 
 Route.get(
