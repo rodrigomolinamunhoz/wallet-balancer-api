@@ -17,7 +17,7 @@ class AcaoController {
       .innerJoin("segmento", "segmento.id", "acao.segmento_id")
       .innerJoin("subsetor", "subsetor.id", "segmento.subsetor_id")
       .innerJoin("setor", "setor.id", "subsetor.setor_id")
-      .orderBy("acao.id");
+      .orderBy("acao.codigo");
   }
 }
 
