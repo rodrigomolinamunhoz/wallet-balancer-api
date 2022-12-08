@@ -775,3 +775,23 @@ insert into acao
   (ID, CODIGO, SEGMENTO_ID)
 VALUES
   (90, 'TAEE11', 70);
+insert into acao
+  (ID, CODIGO, SEGMENTO_ID)
+VALUES
+  (91, 'ABEV3', 35);
+insert into acao
+  (ID, CODIGO, SEGMENTO_ID)
+VALUES
+  (92, 'BBDC3', 73);
+insert into acao
+  (ID, CODIGO, SEGMENTO_ID)
+VALUES
+  (93, 'CRFB3', 38);
+insert into acao
+  (ID, CODIGO, SEGMENTO_ID)
+VALUES
+  (94, 'EGIE3', 70);
+insert into acao
+  (ID, CODIGO, SEGMENTO_ID)
+VALUES
+  (95, 'ITUB4', 73);
