@@ -1,6 +1,7 @@
 "use strict";
 const Carteira = use("App/Models/Carteira");
 const Ativo = use("App/Models/Ativo");
+const HistoricoAtivo = use("App/Models/HistoricoAtivo");
 
 class CarteiraController {
   async create({ request }) {
@@ -29,6 +30,7 @@ class CarteiraController {
 
   async delete({ params }) {
     await Ativo.query().where("carteira_id", params.id).delete();
+    await HistoricoAtivo.query().where("carteira_id", params.id).delete();
     await Carteira.query().where("id", params.id).delete();
   }
 
